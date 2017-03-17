@@ -3,36 +3,10 @@
 #include <vector>
 #include <cmath>
 #include <math.h>
-
-#define EPS 0.000001
+#include "haralick_feat.h"
 
 using namespace cv;
 using namespace std;
-
-
-//Entropy of vector<double>
-double Entropy(vector<double> vec) {
-    double result = 0.0;
-    for (int i = 0; i < vec.size(); i++)
-        result += vec[i] * log(vec[i] + EPS);
-    return -1 * result;
-}
-
-void meanStd(vector<double> v, double &m, double &stdev) {
-    double sum = 0.0;
-    std::for_each (std::begin(v), std::end(v), [&](const double d) {
-        sum += d;
-    });
-    m =  sum / v.size();
-
-    double accum = 0.0;
-    std::for_each (std::begin(v), std::end(v), [&](const double d) {
-        accum += (d - m) * (d - m);
-    });
-
-    stdev = sqrt(accum / (v.size()-1));
-}
-
 
 //Marginal probabilities as in px = sum on j(p(i, j))
 //                             py = sum on i(p(i, j))
@@ -148,7 +122,7 @@ double HaralickContrast(Mat cooc, vector<double> diff) {
 double HaralickDiffEntropy(Mat cooc, vector<double> diff) {
     double diffent = 0.0;
     for (int i = 0; i < diff.size(); i++) 
-        diffent += diff[i] + log(diff[i] + EPS);
+        diffent += diff[i] * log(diff[i] + EPS);
     return -1 * diffent;
 }
 
@@ -239,23 +213,31 @@ int main(int argc, char **argv) {
     std::vector<double> probx = MargProbx(ans);
     std::vector<double> proby = MargProby(ans);
     double ent = HaralickEntropy(ans);
+    double invdiff = HaralickInverseDifference(ans);
     cout << "Energy: " << HaralickEnergy(ans) << endl;
     cout << "Entropy: " << ent << endl;
-    cout << "Inverse Difference Moment: " << HaralickInverseDifference(ans) << endl;
+    cout << "Inverse Difference: " << invdiff << endl;
     cout << "Correlation: " << HaralickCorrelation(ans, probx, proby) << endl;
     cout << "Info Measure of Correlation 1: " << HaralickInfoMeasure1(ans, ent, probx, proby) << endl;
     cout << "Info Measure of Correlation 2: " << HaralickInfoMeasure2(ans, ent, probx, proby) << endl;
     cout << "Contrast: " << HaralickContrast(ans, diff) << endl;
-    cout << "Difference Variance: " << HaralickDiffVariance(ans, diff) << endl;
     cout << "Difference Entropy: " << HaralickDiffEntropy(ans, diff) << endl;
+    cout << "Difference Variance: " << HaralickDiffVariance(ans, diff) << endl;
     cout << "Sum Average: " << HaralickSumAverage(ans, sum) << endl;
-    cout << "Sum Variance: " << HaralickSumVariance(ans, sum) << endl;
     cout << "Sum Entropy: " << HaralickSumEntropy(ans, sum) << endl;
+    cout << "Sum Variance: " << HaralickSumVariance(ans, sum) << endl;
+
+    
+    cout << endl << "Fast feats: " << endl;
+    Mat img2 = imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE);
+    HaralickExtractor extract;
+    std::vector<double>feats = extract.getFeaturesFromImage(img2, deltax, deltay, true);
+    
 
     //minMaxLoc(ans, &min, &max);
     //ans = 255 * (ans/max);
     //ans.convertTo(ans, CV_8UC1);
-    //imshow("cooc", ans);
+    //imshow("coocslow", ans);
     //waitKey(0);
     //printMat(ans);
     return 0;
