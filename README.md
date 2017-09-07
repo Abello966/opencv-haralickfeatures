@@ -5,8 +5,6 @@ Calculates the Co-ocurrence matrix from an openCV \<uchar\> Mat object and proce
 
 12 from 14 features of the paper are implemented. "Maximal Correlation Coefficient" was ignored for being notoriously unstable in the literature and "Sum of Squares: Variance" was avoided for ambiguity of the meaning of μ in the formulae
 
-The program as it is needs refactoring. Ideally it will be all made into a class and be header-only for easyness of use.
-
 # References
 Textural Features for Image Classification, Haralick et. al (1979), available in: http://haralick.org/journals/TexturalFeatures.pdf
 
