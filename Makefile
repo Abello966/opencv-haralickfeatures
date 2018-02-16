@@ -1,14 +1,14 @@
-CC = g++
+CC ?= g++
 
-CFLAGS += \
+INT_CFLAGS := $(CFLAGS) \
     -std=c++11 \
     -I/usr/local/include/opencv \
     -I/usr/local/include/opencv2
 
-LDFLAGS += \
+INT_LDFLAGS := $(LDFLAGS) \
     -L/usr/local/lib
 
-LIBS += \
+INT_LIBS := $(LIBS) \
     -lopencv_shape \
     -lopencv_stitching \
     -lopencv_objdetect \
@@ -25,7 +25,9 @@ LIBS += \
     -lopencv_imgproc \
     -lopencv_flann \
     -lopencv_core \
-    -lm
+    -lm \
+    -lstdc++
 
-haralick_feat: src/haralick_feat.cc
-	$(CC) $(CFLAGS) $^ -g -o $@ $(LDFLAGS) $(LIBS)
+bin/haralick_feat: src/haralick_feat.cc Makefile
+	mkdir -p bin && \
+	$(CC) $(INT_CFLAGS) $< -g -o $@ $(INT_LDFLAGS) $(INT_LIBS)
