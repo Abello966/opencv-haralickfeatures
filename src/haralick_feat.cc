@@ -131,6 +131,7 @@ double HaralickDiffVariance(Mat cooc, vector<double> diff) {
     double diffent = HaralickDiffEntropy(cooc, diff);
     for (int i = 0; i < diff.size(); i++)
         diffvar += (i - diffent) * (i - diffent) * diff[i];
+    return diffvar;
 }
 
 /*Features from Probsum*/
